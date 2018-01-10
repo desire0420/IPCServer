@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * 服务端的AIDLService.java
- *
+ * <p/>
  * Created by lypeer on 2016/7/17.
  */
 public class AIDLService extends Service {
@@ -40,13 +40,13 @@ public class AIDLService extends Service {
 
 
         @Override
-        public Book addBookIn(Book book) throws RemoteException {
+        public void addBook(Book book) throws RemoteException {
             synchronized (this) {
                 if (mBooks == null) {
                     mBooks = new ArrayList<>();
                 }
-                if(book == null){
-                    Log.e(TAG , "Book is null in In");
+                if (book == null) {
+                    Log.e(TAG, "Book is null in In");
                     book = new Book();
                 }
                 //尝试修改book的参数，主要是为了观察其到客户端的反馈
@@ -56,45 +56,6 @@ public class AIDLService extends Service {
                 }
                 //打印mBooks列表，观察客户端传过来的值
                 Log.e(TAG, "invoking addBooks() method , now the list is : " + mBooks.toString());
-                return book;
-            }
-        }
-
-        @Override
-        public Book addBookOut(Book book) throws RemoteException {
-            synchronized (this) {
-                if (mBooks == null) {
-                    mBooks = new ArrayList<>();
-                }
-                if(book == null){
-                    Log.e(TAG , "Book is null in Out");
-                    book = new Book();
-                }
-                book.setPrice(2333);
-                if (!mBooks.contains(book)) {
-                    mBooks.add(book);
-                }
-                Log.e(TAG, "invoking addBooks() method , now the list is : " + mBooks.toString());
-                return book;
-            }
-        }
-
-        @Override
-        public Book addBookInout(Book book) throws RemoteException {
-            synchronized (this) {
-                if (mBooks == null) {
-                    mBooks = new ArrayList<>();
-                }
-                if(book == null){
-                    Log.e(TAG , "Book is null in Inout");
-                    book = new Book();
-                }
-                book.setPrice(2333);
-                if (!mBooks.contains(book)) {
-                    mBooks.add(book);
-                }
-                Log.e(TAG, "invoking addBooks() method , now the list is : " + mBooks.toString());
-                return book;
             }
         }
     };
@@ -107,7 +68,11 @@ public class AIDLService extends Service {
         mBooks.add(book);
         super.onCreate();
     }
-
+    //然后在onBind()BookManager.Stub的实现返回。
+    // 这里为什么可以这样写呢？因为Stub其实就是Binder的子类，
+    // 所以在onBind()方法中可以直接返回Stub的实现。然后在onBind()
+    // BookManager.Stub的实现返回。这里为什么可以这样写呢？
+    // 因为Stub其实就是Binder的子类，所以在onBind()方法中可以直接返回Stub的实现。
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
